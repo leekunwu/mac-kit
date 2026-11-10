@@ -192,8 +192,7 @@
       min-height: 36px;
     }
 
-    .text small,
-    .text small:empty {
+    .text small {
       display: block;
       min-height: 12px;
       line-height: 12px;
@@ -480,120 +479,15 @@
       </div>
     </div>
 
-    <!-- 앱 목록은 아래 APPS 설정을 바탕으로 생성됩니다. -->
     <div id="app-categories"></div>
-
-    <section class="category">
-      <h2>다운로드</h2>
-
-      <div>
-        <a
-          class="external"
-          href="https://filee.sh/ko/#download"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          <span class="ext-name">
-            <img
-              class="ext-icon"
-              alt=""
-              width="26"
-              height="26"
-              src="https://filee.sh/favicon.ico"
-              onerror="this.hidden=true"
-            />
-            Filee
-          </span>
-
-          <span>공식 사이트 ↗</span>
-        </a>
-
-        <details data-presets="filee">
-          <summary>프리셋 <span>0</span></summary>
-          <p>확인 중</p>
-        </details>
-      </div>
-    </section>
-
-    <section class="category">
-      <h2>Chrome 확장</h2>
-
-      <div class="externals">
-        <div>
-          <a
-            class="external"
-            href="https://chromewebstore.google.com/detail/ajhbdcgfhlhhmocddefknjjkejcfpbnj"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Allow Copy +
-            <span>스토어 ↗</span>
-          </a>
-
-          <details data-presets="allow-copy-plus">
-            <summary>프리셋 <span>0</span></summary>
-            <p>확인 중</p>
-          </details>
-        </div>
-
-        <div>
-          <a
-            class="external"
-            href="https://chromewebstore.google.com/detail/pgakpjflombjmehnebnbpnalhegaanag"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            rhwp
-            <span>스토어 ↗</span>
-          </a>
-
-          <details data-presets="rhwp">
-            <summary>프리셋 <span>0</span></summary>
-            <p>확인 중</p>
-          </details>
-        </div>
-
-        <div>
-          <a
-            class="external"
-            href="https://chromewebstore.google.com/detail/inomeogfingihgjfjlpeplalcfajhgai"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Chrome Remote Desktop
-            <span>스토어 ↗</span>
-          </a>
-
-          <details data-presets="chrome-remote-desktop">
-            <summary>프리셋 <span>0</span></summary>
-            <p>확인 중</p>
-          </details>
-        </div>
-
-        <div>
-          <a
-            class="external"
-            href="https://chromewebstore.google.com/detail/jjggpgbabjaeajpefndhckbdgacepoid"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Google Sheets Crosshair
-            <span>스토어 ↗</span>
-          </a>
-
-          <details data-presets="google-sheets-crosshair">
-            <summary>프리셋 <span>0</span></summary>
-            <p>확인 중</p>
-          </details>
-        </div>
-      </div>
-    </section>
 
     <p class="preset-status" id="preset-status">프리셋 확인 중</p>
     <p class="note">라이선스·API 키는 업로드하지 마세요.</p>
 
     <noscript>
-      <p class="note">앱 목록과 설치 명령을 표시하려면 JavaScript를 활성화하세요.</p>
+      <p class="note">
+        앱 목록과 설치 명령을 표시하려면 JavaScript를 활성화하세요.
+      </p>
     </noscript>
   </main>
 
@@ -601,6 +495,7 @@
     <div class="inner">
       <div class="dockrow">
         <strong id="count">선택한 앱 없음</strong>
+
         <button class="primary" id="copy" type="button" disabled>
           명령 복사
         </button>
@@ -622,430 +517,369 @@
 
   <div id="toast" role="status"></div>
 
+  <script src="./app.js"></script>
+
   <script>
-    "use strict";
+    (() => {
+      "use strict";
 
-    // 표준 GitHub Pages 주소에서는 자동 인식합니다.
-    // 커스텀 도메인 또는 로컬 확인 시 owner/repo를 입력하세요.
-    // 토큰은 넣지 마세요.
-    const GITHUB = {
-      owner: "",
-      repo: "",
-      branch: "main"
-    };
+      const settings = window.MAC_KIT;
 
-    // 앱 추가·수정은 이 목록에서 관리합니다.
-    // cask: Homebrew 설치 이름
-    // preset: presets/ 아래의 폴더 이름
-    const APPS = [
-      {
-        category: "업무",
-        items: [
-          {
-            name: "Chrome",
-            cask: "google-chrome",
-            preset: "google-chrome",
-            icon: "https://www.google.com/chrome/static/images/chrome-logo.svg"
-          },
-          {
-            name: "Notion",
-            cask: "notion",
-            preset: "notion",
-            icon: "https://www.notion.com/front-static/favicon.ico"
-          },
-          {
-            name: "Google Drive",
-            cask: "google-drive",
-            preset: "google-drive",
-            icon: "https://drive.google.com/favicon.ico"
-          },
-          {
-            name: "LibreOffice",
-            cask: "libreoffice",
-            preset: "libreoffice",
-            icon: "https://www.libreoffice.org/favicon.ico"
-          }
-        ]
-      },
-      {
-        category: "미디어",
-        items: [
-          {
-            name: "IINA",
-            cask: "iina",
-            preset: "iina",
-            icon: "https://iina.io/img/icon.png"
-          },
-          {
-            name: "Splice",
-            cask: "splice",
-            preset: "splice",
-            icon: "https://en.wikipedia.org/wiki/Special:FilePath/Splice_logo_clean.svg"
-          },
-          {
-            name: "MediaInfo",
-            cask: "mediainfo",
-            preset: "mediainfo",
-            icon: "https://mediaarea.net/favicon.ico"
-          },
-          {
-            name: "ocenaudio",
-            cask: "ocenaudio",
-            preset: "ocenaudio",
-            icon: "https://newgrounds.wiki.gg/images/Ocenaudio164.png?cec792"
-          }
-        ]
-      },
-      {
-        category: "파일",
-        items: [
-          {
-            name: "LocalSend",
-            cask: "localsend",
-            preset: "localsend",
-            icon: "https://localsend.org/favicon.ico"
-          },
-          {
-            name: "Keka",
-            cask: "keka",
-            preset: "keka",
-            icon: "https://www.keka.io/favicon.ico"
-          },
-          {
-            name: "QLMarkdown",
-            cask: "qlmarkdown",
-            preset: "qlmarkdown",
-            icon: "https://applech2.com/wp-content/uploads/2026/04/QLMarkdown-Quick-Look-Extension-Markdown-logo-icon.webp"
-          }
-        ]
-      },
-      {
-        category: "디자인",
-        items: [
-          {
-            name: "Figma",
-            cask: "figma",
-            preset: "figma",
-            icon: "https://www.figma.com/favicon.ico"
-          }
-        ]
-      },
-      {
-        category: "Mac 설정",
-        items: [
-          {
-            name: "SteerMouse",
-            cask: "steermouse",
-            preset: "steermouse",
-            icon: "https://plentycom.jp/images/product/steermouse/sm_icon.png",
-            note: "라이선스 필요"
-          },
-          {
-            name: "Vorssaint",
-            cask: "vorssaint",
-            preset: "vorssaint",
-            icon: "https://images.macmenubar.app/vorssaint/icon-1785123811325.png"
-          },
-          {
-            name: "AlDente",
-            cask: "aldente",
-            preset: "aldente",
-            icon: "https://static.macupdate.com/products/63002/m/phprfga5n-logo.png?v=1725363820",
-            note: "라이선스 필요"
-          },
-          {
-            name: "Itsycal",
-            cask: "itsycal",
-            preset: "itsycal",
-            icon: "https://www.mowglii.com/favicon.ico"
-          },
-          {
-            name: "Catchtype",
-            cask: "hebbianai/tap/catchtype",
-            preset: "catchtype",
-            icon: "https://catchtype.com/favicon.ico",
-            note: "개발자 tap"
-          }
-        ]
-      }
-    ];
-
-    const FALLBACK_ICON = `
-      <svg
-        aria-hidden="true"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        viewBox="0 0 24 24"
-      >
-        <rect height="18" rx="3" width="16" x="4" y="3"></rect>
-        <path d="M8 8h8M8 12h8M8 16h5"></path>
-      </svg>
-    `;
-
-    function createPresetSlot(preset, name) {
-      const details = document.createElement("details");
-      details.dataset.presets = preset;
-
-      const summary = document.createElement("summary");
-      summary.setAttribute("aria-label", name + " 프리셋");
-      summary.append(document.createTextNode("프리셋 "));
-
-      const count = document.createElement("span");
-      count.textContent = "0";
-      summary.append(count);
-
-      const message = document.createElement("p");
-      message.textContent = "등록된 파일 없음";
-
-      details.append(summary, message);
-
-      return details;
-    }
-
-    function createApp(app) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "app";
-
-      const label = document.createElement("label");
-
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.value = app.cask;
-
-      const visual = document.createElement("span");
-      visual.className = "visual";
-
-      const image = document.createElement("img");
-      image.alt = "";
-      image.dataset.logo = "";
-      image.referrerPolicy = "no-referrer";
-
-      const fallback = document.createElement("span");
-      fallback.className = "fallback";
-      fallback.hidden = true;
-      fallback.innerHTML = FALLBACK_ICON;
-
-      const tick = document.createElement("span");
-      tick.className = "tick";
-      tick.textContent = "✓";
-      tick.setAttribute("aria-hidden", "true");
-
-      const fail = () => {
-        image.hidden = true;
-        fallback.hidden = false;
-      };
-
-      image.addEventListener("error", fail);
-      image.src = app.icon;
-
-      if (image.complete && !image.naturalWidth) {
-        fail();
-      }
-
-      visual.append(image, fallback, tick);
-
-      const text = document.createElement("span");
-      text.className = "text";
-      text.append(document.createTextNode(app.name));
-
-      const note = document.createElement("small");
-      note.textContent = app.note || "";
-      text.append(note);
-
-      label.append(input, visual, text);
-
-      wrapper.append(
-        label,
-        createPresetSlot(app.preset, app.name)
-      );
-
-      return wrapper;
-    }
-
-    function renderApps() {
-      const container = document.getElementById("app-categories");
-      const fragment = document.createDocumentFragment();
-
-      APPS.forEach(group => {
-        const section = document.createElement("section");
-        section.className = "category";
-
-        const heading = document.createElement("h2");
-        heading.textContent = group.category;
-
-        const items = document.createElement("div");
-        items.className = "items";
-
-        group.items.forEach(app => {
-          items.append(createApp(app));
-        });
-
-        section.append(heading, items);
-        fragment.append(section);
-      });
-
-      container.replaceChildren(fragment);
-    }
-
-    renderApps();
-
-    const inputs = [
-      ...document.querySelectorAll('input[type="checkbox"]')
-    ];
-
-    document.getElementById("app-total").textContent =
-      "Homebrew · " + inputs.length + "개";
-
-    function command() {
-      return (
-        "brew update && brew install --cask " +
-        inputs
-          .filter(input => input.checked)
-          .map(input => input.value)
-          .join(" ")
-      );
-    }
-
-    function update() {
-      const selectedCount = inputs.filter(input => input.checked).length;
-
-      document.getElementById("count").textContent =
-        selectedCount
-          ? selectedCount + "개 선택"
-          : "선택한 앱 없음";
-
-      document.getElementById("copy").disabled = !selectedCount;
-
-      document.getElementById("cmd").textContent =
-        selectedCount
-          ? command()
-          : "앱을 선택하세요.";
-    }
-
-    inputs.forEach(input => {
-      input.addEventListener("change", update);
-    });
-
-    document.getElementById("all").onclick = () => {
-      inputs.forEach(input => {
-        input.checked = true;
-      });
-
-      update();
-    };
-
-    document.getElementById("none").onclick = () => {
-      inputs.forEach(input => {
-        input.checked = false;
-      });
-
-      update();
-    };
-
-    let toastTimer;
-
-    document.getElementById("copy").onclick = async () => {
-      if (!inputs.some(input => input.checked)) {
+      if (!settings || !Array.isArray(settings.groups)) {
+        console.error("app.js를 불러오지 못했거나 설정이 올바르지 않습니다.");
         return;
       }
 
-      try {
-        await navigator.clipboard.writeText(command());
+      const { github: githubSettings = {}, groups } = settings;
 
-        const toast = document.getElementById("toast");
-        toast.textContent = "복사됨";
-        toast.style.display = "block";
+      const elements = {
+        categories: document.getElementById("app-categories"),
+        appTotal: document.getElementById("app-total"),
+        selectAll: document.getElementById("all"),
+        deselectAll: document.getElementById("none"),
+        count: document.getElementById("count"),
+        copy: document.getElementById("copy"),
+        command: document.getElementById("cmd"),
+        presetStatus: document.getElementById("preset-status"),
+        toast: document.getElementById("toast")
+      };
 
+      const checkboxInputs = [];
+      const presetSlots = [];
+
+      let presetsLoading = false;
+      let toastTimer;
+
+      const FALLBACK_ICON = `
+        <svg
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          viewBox="0 0 24 24"
+        >
+          <rect height="18" rx="3" width="16" x="4" y="3"></rect>
+          <path d="M8 8h8M8 12h8M8 16h5"></path>
+        </svg>
+      `;
+
+      function createElement(tag, className, text) {
+        const element = document.createElement(tag);
+
+        if (className) {
+          element.className = className;
+        }
+
+        if (text !== undefined) {
+          element.textContent = text;
+        }
+
+        return element;
+      }
+
+      function createExternalLink(url, className) {
+        const link = createElement("a", className);
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        return link;
+      }
+
+      function createPresetSlot(preset, name) {
+        const details = document.createElement("details");
+        details.dataset.presets = preset;
+
+        const summary = document.createElement("summary");
+        summary.setAttribute("aria-label", name + " 프리셋");
+        summary.append(document.createTextNode("프리셋 "));
+
+        const count = createElement("span", "", "0");
+        summary.append(count);
+
+        const content = document.createDocumentFragment();
+        content.append(createElement("p", "", "등록된 파일 없음"));
+
+        details.append(summary, content);
+
+        presetSlots.push({
+          element: details,
+          count,
+          preset
+        });
+
+        return details;
+      }
+
+      function createAppVisual(app) {
+        const visual = createElement("span", "visual");
+
+        const image = document.createElement("img");
+        image.alt = "";
+        image.dataset.logo = "";
+        image.referrerPolicy = "no-referrer";
+
+        const fallback = createElement("span", "fallback");
+        fallback.hidden = true;
+        fallback.innerHTML = FALLBACK_ICON;
+
+        const tick = createElement("span", "tick", "✓");
+        tick.setAttribute("aria-hidden", "true");
+
+        function showFallback() {
+          image.hidden = true;
+          fallback.hidden = false;
+        }
+
+        image.addEventListener("error", showFallback, { once: true });
+
+        if (app.icon) {
+          image.src = app.icon;
+
+          if (image.complete && !image.naturalWidth) {
+            showFallback();
+          }
+        } else {
+          showFallback();
+        }
+
+        visual.append(image, fallback, tick);
+
+        return visual;
+      }
+
+      function createBrewApp(app) {
+        const wrapper = createElement("div", "app");
+        const label = document.createElement("label");
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = app.cask;
+        checkboxInputs.push(input);
+
+        const text = createElement("span", "text");
+        text.append(document.createTextNode(app.name));
+        text.append(createElement("small", "", app.note || ""));
+
+        label.append(input, createAppVisual(app), text);
+
+        wrapper.append(
+          label,
+          createPresetSlot(app.preset, app.name)
+        );
+
+        return wrapper;
+      }
+
+      function createLinkApp(app) {
+        const wrapper = document.createElement("div");
+        const link = createExternalLink(app.url, "external");
+
+        if (app.icon) {
+          const name = createElement("span", "ext-name");
+          const image = createElement("img", "ext-icon");
+
+          image.alt = "";
+          image.width = 26;
+          image.height = 26;
+
+          image.addEventListener("error", () => {
+            image.hidden = true;
+          }, { once: true });
+
+          image.src = app.icon;
+
+          name.append(image, document.createTextNode(app.name));
+          link.append(name);
+        } else {
+          link.append(document.createTextNode(app.name));
+        }
+
+        link.append(createElement("span", "", app.linkLabel));
+
+        wrapper.append(
+          link,
+          createPresetSlot(app.preset, app.name)
+        );
+
+        return wrapper;
+      }
+
+      function renderGroups() {
+        const fragment = document.createDocumentFragment();
+
+        groups.forEach(group => {
+          const section = createElement("section", "category");
+          const heading = createElement("h2", "", group.category);
+          const items = document.createElement("div");
+
+          if (group.type === "brew") {
+            items.className = "items";
+
+            group.items.forEach(app => {
+              items.append(createBrewApp(app));
+            });
+          } else {
+            if (group.layout === "grid") {
+              items.className = "externals";
+
+              group.items.forEach(app => {
+                items.append(createLinkApp(app));
+              });
+            } else {
+              group.items.forEach(app => {
+                const wrapper = createLinkApp(app);
+
+                // 기존 단일 다운로드 영역의 DOM 구조를 유지합니다.
+                items.append(...wrapper.childNodes);
+              });
+            }
+          }
+
+          section.append(heading, items);
+          fragment.append(section);
+        });
+
+        elements.categories.replaceChildren(fragment);
+
+        elements.appTotal.textContent =
+          "Homebrew · " + checkboxInputs.length + "개";
+      }
+
+      function getSelectedCasks() {
+        return checkboxInputs
+          .filter(input => input.checked)
+          .map(input => input.value);
+      }
+
+      function buildCommand(casks = getSelectedCasks()) {
+        return "brew update && brew install --cask " + casks.join(" ");
+      }
+
+      function updateSelection() {
+        const selectedCasks = getSelectedCasks();
+        const count = selectedCasks.length;
+
+        elements.count.textContent =
+          count ? count + "개 선택" : "선택한 앱 없음";
+
+        elements.copy.disabled = count === 0;
+
+        elements.command.textContent =
+          count ? buildCommand(selectedCasks) : "앱을 선택하세요.";
+      }
+
+      function setAllSelected(checked) {
+        checkboxInputs.forEach(input => {
+          input.checked = checked;
+        });
+
+        updateSelection();
+      }
+
+      function showToast(message) {
         clearTimeout(toastTimer);
 
+        elements.toast.textContent = message;
+        elements.toast.style.display = "block";
+
         toastTimer = setTimeout(() => {
-          toast.style.display = "none";
+          elements.toast.style.display = "none";
         }, 2000);
-      } catch (error) {
-        prompt("명령 복사", command());
       }
-    };
 
-    function config() {
-      let owner = GITHUB.owner;
-      let repo = GITHUB.repo;
+      async function copyCommand() {
+        const selectedCasks = getSelectedCasks();
 
-      const host = location.hostname;
+        if (!selectedCasks.length) {
+          return;
+        }
 
-      if (host.endsWith(".github.io")) {
-        owner = owner || host.slice(0, -10);
+        const command = buildCommand(selectedCasks);
 
-        repo =
-          repo ||
-          decodeURIComponent(
+        try {
+          await navigator.clipboard.writeText(command);
+          showToast("복사됨");
+        } catch {
+          window.prompt("명령 복사", command);
+        }
+      }
+
+      function resolveGitHubConfig() {
+        let owner = githubSettings.owner || "";
+        let repo = githubSettings.repo || "";
+
+        const host = location.hostname;
+
+        if (host.endsWith(".github.io")) {
+          owner = owner || host.slice(0, -10);
+
+          repo = repo || decodeURIComponent(
             location.pathname.split("/").filter(Boolean)[0] || host
           );
+        }
+
+        return {
+          owner,
+          repo,
+          branch: githubSettings.branch || "main"
+        };
       }
 
-      return {
-        owner,
-        repo,
-        branch: GITHUB.branch || "main"
-      };
-    }
+      function clearPresetSlot(slot, message) {
+        const summary = slot.element.querySelector("summary");
 
-    function empty(element, text) {
-      element.querySelectorAll("p,a").forEach(node => {
-        node.remove();
-      });
+        slot.count.textContent = "0";
+        slot.element.replaceChildren(summary);
 
-      element.querySelector("summary span").textContent = "0";
-
-      const paragraph = document.createElement("p");
-      paragraph.textContent = text;
-      element.append(paragraph);
-    }
-
-    let presetsLoading = false;
-
-    async function loadPresets() {
-      if (presetsLoading) {
-        return;
+        if (message) {
+          slot.element.append(createElement("p", "", message));
+        }
       }
 
-      const status = document.getElementById("preset-status");
-
-      const slots = [
-        ...document.querySelectorAll("[data-presets]")
-      ];
-
-      slots.forEach(element => {
-        empty(element, "확인 중");
-      });
-
-      const github = config();
-
-      if (!github.owner || !github.repo) {
-        slots.forEach(element => {
-          empty(element, "GitHub Pages에서 확인");
+      function setAllPresetMessages(message) {
+        presetSlots.forEach(slot => {
+          clearPresetSlot(slot, message);
         });
-
-        status.textContent =
-          "표준 GitHub Pages에서 자동 연결 · 로컬/커스텀 도메인은 GITHUB 설정 필요";
-
-        return;
       }
 
-      presetsLoading = true;
-      status.textContent = "프리셋 확인 중";
-
-      try {
-        const api =
+      function buildTreeUrl(github) {
+        return (
           "https://api.github.com/repos/" +
           encodeURIComponent(github.owner) +
           "/" +
           encodeURIComponent(github.repo) +
           "/git/trees/" +
           encodeURIComponent(github.branch) +
-          "?recursive=1";
+          "?recursive=1"
+        );
+      }
 
-        const response = await fetch(api, {
+      function buildRawFileBaseUrl(github) {
+        return (
+          "https://raw.githubusercontent.com/" +
+          encodeURIComponent(github.owner) +
+          "/" +
+          encodeURIComponent(github.repo) +
+          "/" +
+          encodeURIComponent(github.branch) +
+          "/"
+        );
+      }
+
+      function getResponseError(status) {
+        if (status === 403 || status === 429) {
+          return "조회 한도 초과 · 잠시 후 다시 시도";
+        }
+
+        if (status === 404) {
+          return "저장소·공개 여부·브랜치를 확인하세요";
+        }
+
+        return "프리셋 조회 실패";
+      }
+
+      async function fetchPresetTree(github) {
+        const response = await fetch(buildTreeUrl(github), {
           headers: {
             Accept: "application/vnd.github+json"
           },
@@ -1053,13 +887,7 @@
         });
 
         if (!response.ok) {
-          throw new Error(
-            response.status === 403 || response.status === 429
-              ? "조회 한도 초과 · 잠시 후 다시 시도"
-              : response.status === 404
-                ? "저장소·공개 여부·브랜치를 확인하세요"
-                : "프리셋 조회 실패"
-          );
+          throw new Error(getResponseError(response.status));
         }
 
         const data = await response.json();
@@ -1072,92 +900,168 @@
           throw new Error("잘못된 파일 목록");
         }
 
+        return data.tree;
+      }
+
+      function indexPresetFiles(tree) {
+        const fileMap = new Map(
+          presetSlots.map(slot => [slot.preset, []])
+        );
+
+        tree.forEach(file => {
+          if (
+            file.type !== "blob" ||
+            typeof file.path !== "string" ||
+            !file.path.startsWith("presets/")
+          ) {
+            return;
+          }
+
+          const relativePath = file.path.slice("presets/".length);
+          const separator = relativePath.indexOf("/");
+
+          if (separator === -1) {
+            return;
+          }
+
+          const preset = relativePath.slice(0, separator);
+          const files = fileMap.get(preset);
+
+          if (!files) {
+            return;
+          }
+
+          const filePath = relativePath.slice(separator + 1);
+
+          if (
+            !filePath ||
+            filePath.split("/").some(part => part.startsWith("."))
+          ) {
+            return;
+          }
+
+          files.push({
+            path: file.path,
+            name: filePath
+          });
+        });
+
+        fileMap.forEach(files => {
+          files.sort((a, b) => a.path.localeCompare(b.path));
+        });
+
+        return fileMap;
+      }
+
+      function renderPresetFiles(fileMap, github) {
+        const baseUrl = buildRawFileBaseUrl(github);
         let total = 0;
 
-        slots.forEach(element => {
-          const prefix = "presets/" + element.dataset.presets + "/";
+        presetSlots.forEach(slot => {
+          const files = fileMap.get(slot.preset) || [];
 
-          const files = data.tree
-            .filter(file => {
-              return (
-                file.type === "blob" &&
-                file.path.startsWith(prefix) &&
-                !file.path
-                  .slice(prefix.length)
-                  .split("/")
-                  .some(part => part.startsWith("."))
-              );
-            })
-            .sort((a, b) => {
-              return a.path.localeCompare(b.path);
-            });
-
-          empty(
-            element,
+          clearPresetSlot(
+            slot,
             files.length ? "" : "등록된 파일 없음"
           );
 
-          if (files.length) {
-            element.querySelectorAll("p").forEach(node => {
-              node.remove();
-            });
-          }
+          const fragment = document.createDocumentFragment();
 
           files.forEach(file => {
-            const link = document.createElement("a");
+            const encodedPath = file.path
+              .split("/")
+              .map(encodeURIComponent)
+              .join("/");
 
-            link.href =
-              "https://raw.githubusercontent.com/" +
-              encodeURIComponent(github.owner) +
-              "/" +
-              encodeURIComponent(github.repo) +
-              "/" +
-              encodeURIComponent(github.branch) +
-              "/" +
-              file.path
-                .split("/")
-                .map(encodeURIComponent)
-                .join("/");
+            const link = createExternalLink(baseUrl + encodedPath);
 
-            link.textContent = file.path.slice(prefix.length);
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
+            link.textContent = file.name;
             link.download = file.path.split("/").pop();
             link.title = "파일 열기 · 다운로드";
 
-            element.append(link);
+            fragment.append(link);
           });
 
-          element.querySelector("summary span").textContent =
-            String(files.length);
+          slot.element.append(fragment);
+          slot.count.textContent = String(files.length);
 
           total += files.length;
         });
 
-        status.textContent = "프리셋 " + total + "개";
-      } catch (error) {
-        slots.forEach(element => {
-          empty(element, "목록을 불러오지 못했습니다");
-        });
-
-        status.textContent =
-          error instanceof Error
-            ? error.message
-            : "프리셋 조회 실패";
-      } finally {
-        presetsLoading = false;
+        return total;
       }
 
-      const retry = document.createElement("button");
-      retry.type = "button";
-      retry.textContent = "새로고침";
-      retry.onclick = loadPresets;
+      function appendPresetRefreshButton() {
+        const button = createElement("button", "", "새로고침");
+        button.type = "button";
+        button.addEventListener("click", loadPresets);
 
-      status.append(retry);
-    }
+        elements.presetStatus.append(button);
+      }
 
-    update();
-    loadPresets();
+      async function loadPresets() {
+        if (presetsLoading) {
+          return;
+        }
+
+        setAllPresetMessages("확인 중");
+
+        const github = resolveGitHubConfig();
+
+        if (!github.owner || !github.repo) {
+          setAllPresetMessages("GitHub Pages에서 확인");
+
+          elements.presetStatus.textContent =
+            "표준 GitHub Pages에서 자동 연결 · 로컬/커스텀 도메인은 GITHUB 설정 필요";
+
+          return;
+        }
+
+        presetsLoading = true;
+        elements.presetStatus.textContent = "프리셋 확인 중";
+
+        try {
+          const tree = await fetchPresetTree(github);
+          const fileMap = indexPresetFiles(tree);
+          const total = renderPresetFiles(fileMap, github);
+
+          elements.presetStatus.textContent = "프리셋 " + total + "개";
+        } catch (error) {
+          setAllPresetMessages("목록을 불러오지 못했습니다");
+
+          elements.presetStatus.textContent =
+            error instanceof Error
+              ? error.message
+              : "프리셋 조회 실패";
+        } finally {
+          presetsLoading = false;
+          appendPresetRefreshButton();
+        }
+      }
+
+      function bindEvents() {
+        elements.categories.addEventListener("change", event => {
+          if (event.target.matches('input[type="checkbox"]')) {
+            updateSelection();
+          }
+        });
+
+        elements.selectAll.addEventListener("click", () => {
+          setAllSelected(true);
+        });
+
+        elements.deselectAll.addEventListener("click", () => {
+          setAllSelected(false);
+        });
+
+        elements.copy.addEventListener("click", copyCommand);
+      }
+
+      renderGroups();
+      bindEvents();
+      updateSelection();
+      loadPresets();
+    })();
   </script>
 </body>
 </html>
