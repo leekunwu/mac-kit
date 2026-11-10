@@ -1,0 +1,34 @@
+{
+    "br.com.ocenaudio.shortcuts": [
+        {
+            "action_id": "Controls_PlaybackMixerConfig",
+            "description": "Control Menu / Playback Mixer Config",
+            "key_sequence": "Ctrl+="
+        },
+        {
+            "action_id": "Controls_RecordStartStop",
+            "description": "Control Menu / Start/Stop Recording",
+            "key_sequence": ""
+        },
+        {
+            "action_id": "View_ZoomIn",
+            "description": "View Menu / Zoom In",
+            "key_sequence": "T"
+        },
+        {
+            "action_id": "View_ZoomOut",
+            "description": "View Menu / Zoom Out",
+            "key_sequence": "R"
+        },
+        {
+            "action_id": "ocencanvas.editSelectedRegion",
+            "description": "AudioCanvasKeySequences / Create/Edit region",
+            "key_sequence": ""
+        },
+        {
+            "action_id": "ocencanvas.gotoPlayHead",
+            "description": "AudioCanvasKeySequences / Move cursor to playhead position",
+            "key_sequence": "`"
+        }
+    ]
+}
